@@ -1,8 +1,9 @@
 import os
 import sys
-import time
+import time as Time
+import re
 from event import Event, from_xml
-from datetime import date, time
+from datetime import date as Date, time, datetime
 from slackclient import SlackClient
 
 READ_SOCKET_DELAY = 1
@@ -13,6 +14,7 @@ class duebot(object):
 		self.name = name
 		self.slack_client = SlackClient(os.environ.get('DUE_BOT_API_TOKEN'))
 		self.bot_id = self.get_bot_id()
+		print self.bot_id
 
 	def get_bot_id(self):
 		api_call = self.slack_client.api_call("users.list")
@@ -24,7 +26,8 @@ class duebot(object):
 			print "Could not get bot id!"
 			return -1	
 
-	def print_all_messages(self):
+	def listen(self):
+		pattern = r"(?<=<@" + self.bot_id + r"> ).+"
 		if self.slack_client.rtm_connect():
 			print "Duebot <" + self.name + "> up and running"
 			while True:
@@ -32,9 +35,103 @@ class duebot(object):
 				if output_list and len(output_list) > 0:
 					for output in output_list:
 						if 'channel' in output and 'text' in output:
-							print output['channel']
-							print output['text']
-				time.sleep(READ_SOCKET_DELAY)
+							#Are you talking to me?
+							match = re.search(pattern, output['text'])
+							if match:
+								self.parseInstruction(match.group())
+				Time.sleep(READ_SOCKET_DELAY)
+
+	def parseInstruction(self, instruction):
+		newEventRE = r".+(?= due).+"
+
+		match = re.search(newEventRE, instruction)
+		if match:
+			self.handleNewEvent(match.group())
+
+
+	def handleNewEvent(self, instruction):
+		if instruction.endswith(" is"):
+			instruction = instruction.split(" is")[0]
+		print instruction
+		#Parse instruction
+		gettingName = True
+		name = ""
+		date = ""
+		for word in instruction.split(" "):
+			if word.lower() in ["is", "due", "on"]:
+				gettingName = False
+			elif gettingName:
+				name += word + " "
+			else:
+				date += word + " "
+		print "name =" + name
+		print "date =" + date
+		try:
+			e = Event(name, self.parseDate(date))
+			print "event created successfully!"
+		except ValueError:
+			print "Something went wrong!"
+
+	def parseDate(self, date):
+		longFormPattern = r"\w+ [0-9]{1,2}( [0-9]{2,4})?"
+		shortFormPatter = r"09/22/2016"
+		match = re.search(longFormPattern, date)
+		if match:
+			return self.parseLongFormDate(match.group())
+		match = re.search(shortFormPatter, date)
+		if match:
+			return self.parseShortFormDate(match.group())
+		#Can't parse date
+		#TODO not this
+		return None
+
+	def parseLongFormDate(self, date):
+		dates = date.split(" ")
+		month, day = dates[0], int(dates[1])
+		month = monthAsInt(month)
+		currDate = Date.today()
+		if len(dates) == 3:
+			year = int(dates[2])
+		else:
+			if month >= currDate.month:
+				year = currDate.year
+			else:
+				year = currDate.year + 1
+		return Date(year, month, day)
+
+	def parseShortFormDate(self, date):
+		dates = date.split("/")
+		day, month, year = int(dates[0]), int(dates[1]), int(dates[2])
+		return Date(year, month, day)
+
+def monthAsInt(month):
+	month = month.lower()
+	if month == "january" or month == "jan":
+		return 1
+	elif month == "february" or month == "feb":
+		return 2
+	elif month == "march" or month == "mar":
+		return 3
+	elif month == "april" or month == "apr":
+		return 4
+	elif month == "may":
+		return 5
+	elif month == "june" or month == "jun":
+		return 6
+	elif month == "july" or month == "jul":
+		return 7
+	elif month == "august" or month == "aug":
+		return 8
+	elif month == "september" or month == "sep":
+		return 9
+	elif month == "october" or month == "oct":
+		return 10
+	elif month == "november" or month == "nov":
+		return 11
+	elif month == "december" or month == "dec":
+		return 12
+	else:
+		raise ValueError
 
 def Main():
 	if len(sys.argv) != 2:
@@ -42,9 +139,7 @@ def Main():
 		print "Usage: python duebot.py <name>"
 		return 1
 	d = duebot(sys.argv[1])
-	d.print_all_messages()
+	d.listen()
 
 if __name__ == '__main__':
-	events = from_xml("events.xml")
-	for event in events:
-		print event.to_xml()
+	Main()
