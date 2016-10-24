@@ -1,6 +1,8 @@
 import os
 import sys
 import time
+from event import Event, from_xml
+from datetime import date, time
 from slackclient import SlackClient
 
 READ_SOCKET_DELAY = 1
@@ -43,4 +45,6 @@ def Main():
 	d.print_all_messages()
 
 if __name__ == '__main__':
-	Main()
+	events = from_xml("events.xml")
+	for event in events:
+		print event.to_xml()
