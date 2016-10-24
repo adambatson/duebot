@@ -1,0 +1,41 @@
+<!--Test Events -->
+<events>
+<event>
+        <title>SYSC4504 A1</title>
+        <date>
+                <year>2016</year>
+                <month>10</month>
+                <day>24</day>
+        </date>
+        <time>9PM</time>
+</event>
+
+<event>
+        <title>SYSC4602 A3</title>
+        <date>
+                <year>2016</year>
+                <month>10</month>
+                <day>23</day>
+        </date>
+        <time>12PM</time>
+</event>
+<!--Invalid events should not be added!-->
+<event>
+        <title>SYSC4602 A3</title>
+        <date>
+                <year>2016</year>
+                <month>14</month>
+                <day>23</day>
+        </date>
+        <time>12PM</time>
+</event>
+<event>
+        <title>SYSC4602 A3</title>
+        <date>
+                <year>2016</year>
+                <month>10</month>
+                <day>fish</day>
+        </date>
+        <time>12PM</time>
+</event>
+</events>

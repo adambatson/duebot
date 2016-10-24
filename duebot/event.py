@@ -23,6 +23,10 @@ class Event(object):
 		s += "</event>\n"
 		return s
 
+	def __eq__(self, other):
+		return self.title == other.title and self.due_date == other.due_date \
+			and self.due_time == other.due_time
+
 def parseDate(date):
 	"""Parses a date tag from xml input
 	returns a tuple containing the year, month, and day as strings
@@ -54,7 +58,7 @@ def parseEvent(event):
 	except ValueError:
 		print "Fatal! An invalid date was found in the xml file, it is possibly corrupted"
 		print "<" + title + "> (YYYY/MM/DD) " + str(year) + "/" + str(month) + "/" + str(day)
-		sys.exit()
+		raise ValueError
 	return Event(title, d, time)
 
 def from_xml(xml_file):
@@ -67,5 +71,8 @@ def from_xml(xml_file):
 	xmldoc = minidom.parse(xml_file)
 	eventlist = xmldoc.getElementsByTagName('event')
 	for e in eventlist:
-		events.append(parseEvent(e))
+		try:
+			events.append(parseEvent(e))
+		except ValueError:
+			print "Event is being skipped!"
 	return events
