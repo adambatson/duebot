@@ -21,7 +21,8 @@ class Duebot(object):
 		"""
 		self.name = name
 		self.slack_client = SlackClient(os.environ.get('DUE_BOT_API_TOKEN'))
-		self.bot_id = self.get_bot_id() if not testMonde else TEST_MODE_BOT_ID
+		self.bot_id = self.get_bot_id() if not testMode else TEST_MODE_BOT_ID
+		self.events = []
 
 	def get_bot_id(self):
 		"""Gets the User id associated with this bots name
@@ -60,7 +61,8 @@ class Duebot(object):
 
 		match = re.search(newEventRE, instruction)
 		if match:
-			self.handleNewEvent(match.group())
+			event = self.handleNewEvent(match.group())
+			if event: self.events.append(event)
 
 
 	def handleNewEvent(self, instruction):
@@ -74,14 +76,16 @@ class Duebot(object):
 			if word.lower() in ["is", "due", "on"]:
 				gettingName = False
 			elif gettingName:
-				name += word + " "
+				#Don't add a space before the first word
+				if name == "": name += word
+				else: name += " " + word
 			else:
 				date += word + " "
 		try:
 			e = Event(name, self.parseDate(date))
-			print "event created successfully!"
 		except ValueError:
-			print "Something went wrong!"
+			e = None
+		return e
 
 	def parseDate(self, date):
 		"""Parses a user inputted date from an instruction into a valid date object
@@ -89,11 +93,11 @@ class Duebot(object):
 		return: A valid date object based on date
 		"""
 		longFormPattern = r"\w+ [0-9]{1,2}( [0-9]{2,4})?"
-		shortFormPatter = r"09/22/2016"
+		shortFormPattern = r"\d\d/\d\d/\d\d\d\d"
 		match = re.search(longFormPattern, date)
 		if match:
 			return self.parseLongFormDate(match.group())
-		match = re.search(shortFormPatter, date)
+		match = re.search(shortFormPattern, date)
 		if match:
 			return self.parseShortFormDate(match.group())
 		#Can't parse date
