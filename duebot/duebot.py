@@ -7,16 +7,25 @@ from datetime import date as Date, time, datetime
 from slackclient import SlackClient
 
 READ_SOCKET_DELAY = 1
+TEST_MODE_BOT_ID = -1
 
-class duebot(object):
+class Duebot(object):
 
-	def __init__(self, name):
+	def __init__(self, name, testMode=False):
+		"""
+		Constructor
+		name: The name of this bot
+		testMode: Used to trigger testMode for unit tests
+			in test mode the bot will not attempt to communicate with
+			the slack api through the slack client
+		"""
 		self.name = name
 		self.slack_client = SlackClient(os.environ.get('DUE_BOT_API_TOKEN'))
-		self.bot_id = self.get_bot_id()
-		print self.bot_id
+		self.bot_id = self.get_bot_id() if not testMonde else TEST_MODE_BOT_ID
 
 	def get_bot_id(self):
+		"""Gets the User id associated with this bots name
+		"""
 		api_call = self.slack_client.api_call("users.list")
 		if api_call.get('ok'):
 			users = api_call.get('members')
@@ -27,6 +36,8 @@ class duebot(object):
 			return -1	
 
 	def listen(self):
+		"""Checks for messages from the firehose every READ_SOCKET_DELAY seconds
+		"""
 		pattern = r"(?<=<@" + self.bot_id + r"> ).+"
 		if self.slack_client.rtm_connect():
 			print "Duebot <" + self.name + "> up and running"
@@ -42,6 +53,9 @@ class duebot(object):
 				Time.sleep(READ_SOCKET_DELAY)
 
 	def parseInstruction(self, instruction):
+		"""Parses an instruction received through slack
+		instruction: the instruction to be parsed
+		"""
 		newEventRE = r".+(?= due).+"
 
 		match = re.search(newEventRE, instruction)
@@ -50,10 +64,9 @@ class duebot(object):
 
 
 	def handleNewEvent(self, instruction):
-		if instruction.endswith(" is"):
-			instruction = instruction.split(" is")[0]
-		print instruction
-		#Parse instruction
+		"""Handles the creation of a new event
+		instruction: The instruction detailing the new event
+		"""
 		gettingName = True
 		name = ""
 		date = ""
@@ -64,8 +77,6 @@ class duebot(object):
 				name += word + " "
 			else:
 				date += word + " "
-		print "name =" + name
-		print "date =" + date
 		try:
 			e = Event(name, self.parseDate(date))
 			print "event created successfully!"
@@ -73,6 +84,10 @@ class duebot(object):
 			print "Something went wrong!"
 
 	def parseDate(self, date):
+		"""Parses a user inputted date from an instruction into a valid date object
+		date: The date from the instruction
+		return: A valid date object based on date
+		"""
 		longFormPattern = r"\w+ [0-9]{1,2}( [0-9]{2,4})?"
 		shortFormPatter = r"09/22/2016"
 		match = re.search(longFormPattern, date)
@@ -86,6 +101,8 @@ class duebot(object):
 		return None
 
 	def parseLongFormDate(self, date):
+		"""Parses a date f the form <Month> <Day> [Year]
+		"""
 		dates = date.split(" ")
 		month, day = dates[0], int(dates[1])
 		month = monthAsInt(month)
@@ -100,6 +117,8 @@ class duebot(object):
 		return Date(year, month, day)
 
 	def parseShortFormDate(self, date):
+		"""Parses a date of the from dd/mm/yyyy
+		"""
 		dates = date.split("/")
 		day, month, year = int(dates[0]), int(dates[1]), int(dates[2])
 		return Date(year, month, day)
@@ -138,7 +157,7 @@ def Main():
 		print "Incorrect number of command line arguments!"
 		print "Usage: python duebot.py <name>"
 		return 1
-	d = duebot(sys.argv[1])
+	d = Duebot(sys.argv[1])
 	d.listen()
 
 if __name__ == '__main__':
