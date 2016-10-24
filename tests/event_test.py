@@ -3,7 +3,6 @@ import sys
 import os
 #Python interpretter needs to search up on directory for the duebot package
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "//..//")
-print sys.path
 from datetime import date
 from duebot.event import Event, from_xml
 

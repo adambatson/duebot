@@ -1,5 +1,5 @@
 # Deadline Bot
-
+[![build status](http://gitlab.adambatson.com/adambatson/deadline_bot/badges/master/build.svg)](http://gitlab.adambatson.com/adambatson/deadline_bot/commits/master)
 A Slack bot to track due dates
 
 ## Dependencies
