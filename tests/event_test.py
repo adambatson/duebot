@@ -13,7 +13,7 @@ EVENT1_XML = "<event>\n\
 		<month>10</month>\n\
 		<day>24</day>\n\
 	</date>\n\
-	<time>9PM</time>\n\
+	<time>21:00:00</time>\n\
 </event>\n"
 
 #Tests will work even if not ran directly from tests driectory

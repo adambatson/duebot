@@ -88,19 +88,27 @@ class Duebot(object):
 		instruction: The instruction detailing the new event
 		"""
 		gettingName = True
+		gettingDate = False
 		name = ""
 		date = ""
+		time = ""
 		for word in instruction.split(" "):
 			if word.lower() in ["is", "due", "on"]:
 				gettingName = False
+				gettingDate = True
 			elif gettingName:
 				#Don't add a space before the first word
 				if name == "": name += word
 				else: name += " " + word
-			else:
-				date += word + " "
+			elif gettingDate:
+				if word.lower() == "at":
+					gettingDate = False
+				else: date += word + " "
+			else: #Getting time
+				time += word
 		try:
-			e = Event(name, self.parseDate(date))
+			if time == "": time = None #No time supplied
+			e = Event(name, self.parseDate(date), time)
 		except ValueError:
 			e = None
 		return e
