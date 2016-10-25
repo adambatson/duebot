@@ -1,5 +1,6 @@
 import unittest
 from datetime import date
+import filecmp
 import sys
 import os
 #Python interpretter needs to search up on directory for the duebot package
@@ -8,6 +9,7 @@ from duebot.duebot import Duebot, TEST_MODE_BOT_ID
 from duebot.event import Event
 
 BOT_NAME = "TestBot"
+TEST_XML = os.path.dirname(os.path.realpath(__file__)) + "/data/expected_events.xml"
 
 class DueBotTest(unittest.TestCase):
 
@@ -47,6 +49,21 @@ class DueBotTest(unittest.TestCase):
 		"""
 		self.bot.parseInstruction("SYSC4504 A3, 12/01/2016")
 		self.assertEquals(0, len(self.bot.events))
+
+	def testWriteEventsToXML(self):
+		"""
+		Test that events are written to the xml file correctly
+		"""
+		# First clear the file from earlier tests
+		if os.path.isfile(self.bot.event_xml): os.remove(self.bot.event_xml)
+		#Use a different bot to avoid conflicts with the data file
+		bot2 = Duebot(BOT_NAME, True)
+		bot2.parseInstruction("SYSC4504 A1 is due on 24/10/2016")
+		bot2.parseInstruction("SYSC4602 A3 is due October 23 2016")
+		self.assertTrue(filecmp.cmp(TEST_XML, bot2.event_xml))
+		#Delete the xml file
+		os.remove(bot2.event_xml)
+
 
 if __name__ == '__main__':
 	unittest.main()

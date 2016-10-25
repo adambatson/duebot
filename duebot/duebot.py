@@ -23,6 +23,9 @@ class Duebot(object):
 		self.slack_client = SlackClient(os.environ.get('DUE_BOT_API_TOKEN'))
 		self.bot_id = self.get_bot_id() if not testMode else TEST_MODE_BOT_ID
 		self.events = []
+		self.event_xml = os.path.dirname(os.path.realpath(__file__)) + "/../data/" + \
+			str(self.bot_id) + "_events.xml"
+		if not os.path.isfile(self.event_xml): self.createXMLFile()
 
 	def get_bot_id(self):
 		"""Gets the User id associated with this bots name
@@ -53,6 +56,19 @@ class Duebot(object):
 								self.parseInstruction(match.group())
 				Time.sleep(READ_SOCKET_DELAY)
 
+	def createXMLFile(self):
+		f = open(self.event_xml, "w+")
+		f.write("<events>\n</events>")
+		f.close()
+
+	def writeEventToFile(self, event):
+		f = open(self.event_xml, "r+")
+		lines = f.readlines()
+		f.seek(0 - len(lines[len(lines) - 1]), 2)
+		f.write(event.to_xml())
+		f.write("</events>")
+		f.close()
+
 	def parseInstruction(self, instruction):
 		"""Parses an instruction received through slack
 		instruction: the instruction to be parsed
@@ -62,7 +78,9 @@ class Duebot(object):
 		match = re.search(newEventRE, instruction)
 		if match:
 			event = self.handleNewEvent(match.group())
-			if event: self.events.append(event)
+			if event: 
+				self.events.append(event)
+				self.writeEventToFile(event)
 
 
 	def handleNewEvent(self, instruction):
