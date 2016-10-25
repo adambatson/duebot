@@ -8,8 +8,11 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "//..//")
 from duebot.duebot import Duebot, TEST_MODE_BOT_ID
 from duebot.event import Event
 
+#Check which expected_results xml to us
+expected_res = "expected_events_WIN.xml" if os.name == "nt" else "expected_events_UNIX.xml"
+
 BOT_NAME = "TestBot"
-TEST_XML = os.path.dirname(os.path.realpath(__file__)) + "/data/expected_events.xml"
+TEST_XML = os.path.dirname(os.path.realpath(__file__)) + "/data/" + expected_res
 
 class DueBotTest(unittest.TestCase):
 
