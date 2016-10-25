@@ -42,9 +42,9 @@ class Duebot(object):
 	def listen(self):
 		"""Checks for messages from the firehose every READ_SOCKET_DELAY seconds
 		"""
-		pattern = r"(?<=<@" + self.bot_id + r"> ).+"
+		pattern = r"(?<=<@" + str(self.bot_id) + r"> ).+"
 		if self.slack_client.rtm_connect():
-			print "Duebot <" + self.name + "> up and running"
+			print "Duebot <" + str(self.name) + "> up and running"
 			while True:
 				output_list = self.slack_client.rtm_read()
 				if output_list and len(output_list) > 0:
