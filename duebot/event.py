@@ -1,5 +1,5 @@
 from xml.dom import minidom
-from datetime import date, datetime
+from datetime import date, datetime, time
 import sys
 import re
 
@@ -27,6 +27,12 @@ class Event(object):
 	def __eq__(self, other):
 		return self.title == other.title and self.due_date == other.due_date \
 			and self.due_time == other.due_time
+
+	def __str__(self):
+		s = self.title + " is due on " + self.due_date.strftime("%B %d %Y")
+		if self.due_time:
+			s += " at " + self.due_time.strftime("%I:%M%p")
+		return s
 
 def parseDate(date):
 	"""Parses a date tag from xml input

@@ -34,5 +34,12 @@ class EventTest(unittest.TestCase):
 		self.assertEquals(self.e1, events[0])
 		self.assertEquals(self.e2, events[1])
 
+	def testToStringWithTime(self):
+		self.assertEquals(str(self.e1), "SYSC4504 A1 is due on October 24 3016 at 09:00PM")
+
+	def testToStringWithoutTime(self):
+		e = Event("SYSC3101 A2", date(3016, 12, 10))
+		self.assertEquals(str(e), "SYSC3101 A2 is due on December 10 3016")
+
 if __name__ == '__main__':
 	unittest.main()
