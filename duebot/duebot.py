@@ -103,7 +103,9 @@ class Duebot(object):
 			elif gettingDate:
 				if word.lower() == "at":
 					gettingDate = False
-				else: date += word + " "
+				else: 
+					if date == "": date += word
+					else: date += " " + word
 			else: #Getting time
 				time += word
 		try:
@@ -118,70 +120,15 @@ class Duebot(object):
 		date: The date from the instruction
 		return: A valid date object based on date
 		"""
-		longFormPattern = r"\w+ [0-9]{1,2}( [0-9]{2,4})?"
-		shortFormPattern = r"\d\d/\d\d/\d\d\d\d"
-		match = re.search(longFormPattern, date)
-		if match:
-			return self.parseLongFormDate(match.group())
-		match = re.search(shortFormPattern, date)
-		if match:
-			return self.parseShortFormDate(match.group())
-		#Can't parse date
-		#TODO not this
-		return None
-
-	def parseLongFormDate(self, date):
-		"""Parses a date f the form <Month> <Day> [Year]
-		"""
-		dates = date.split(" ")
-		month, day = dates[0], int(dates[1])
-		month = monthAsInt(month)
-		currDate = Date.today()
-		if len(dates) == 3:
-			year = int(dates[2])
-		else:
-			if month >= currDate.month:
-				year = currDate.year
-			else:
-				year = currDate.year + 1
-		return Date(year, month, day)
-
-	def parseShortFormDate(self, date):
-		"""Parses a date of the from dd/mm/yyyy
-		"""
-		dates = date.split("/")
-		day, month, year = int(dates[0]), int(dates[1]), int(dates[2])
-		return Date(year, month, day)
-
-def monthAsInt(month):
-	month = month.lower()
-	if month == "january" or month == "jan":
-		return 1
-	elif month == "february" or month == "feb":
-		return 2
-	elif month == "march" or month == "mar":
-		return 3
-	elif month == "april" or month == "apr":
-		return 4
-	elif month == "may":
-		return 5
-	elif month == "june" or month == "jun":
-		return 6
-	elif month == "july" or month == "jul":
-		return 7
-	elif month == "august" or month == "aug":
-		return 8
-	elif month == "september" or month == "sep":
-		return 9
-	elif month == "october" or month == "oct":
-		return 10
-	elif month == "november" or month == "nov":
-		return 11
-	elif month == "december" or month == "dec":
-		return 12
-	else:
+		possiblePatterns = ["%d/%m/%y", "%d/%m/%Y", "%B %d %Y",	"%B %d", "%b %d %Y", "%b %d"]
+		for pattern in possiblePatterns:
+			try:
+				return datetime.strptime(date, pattern).date()
+			except ValueError:
+				pass
+		#None of the pattern match	
 		raise ValueError
-
+		
 def Main():
 	if len(sys.argv) != 2:
 		print "Incorrect number of command line arguments!"

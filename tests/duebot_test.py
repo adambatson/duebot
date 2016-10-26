@@ -54,8 +54,8 @@ class DueBotTest(unittest.TestCase):
 		self.assertEquals(0, len(self.bot.events))
 
 	def testCreateEventWithTime(self):
-		e = Event("SYSC2300 A2", date(2016,12, 14), "9AM")
-		self.bot.parseInstruction("SYSC2300 A2 is due December 14 at 9AM")
+		e = Event("SYSC2300 A2", date(2016, 12, 14), "9AM")
+		self.bot.parseInstruction("SYSC2300 A2 is due December 14 2016 at 9AM")
 		self.assertEquals(e, self.bot.events[0])
 
 	def testWriteEventsToXML(self):
