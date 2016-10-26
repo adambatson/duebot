@@ -1,5 +1,5 @@
 import unittest
-from datetime import date, time
+from datetime import date, time, timedelta
 import filecmp
 import sys
 import os
@@ -106,6 +106,41 @@ class DueBotTest(unittest.TestCase):
 		# Now the past event should be deleted
 		self.assertTrue(filecmp.cmp(TEST_XML, bot2.event_xml))
 
+	def testWhatDueToday(self):
+		e1 = Event("SYSC3101 A1", date.today())
+		e2 = Event("SYSC3200 A4", date(3016, 10, 12))
+		e3 = Event("SYSC4001 Lab5", date.today())
+		self.bot.events.extend([e1, e2, e3])
+		expect = str(e1) + "\n" + str(e3) + "\n"
+		self.assertEquals(expect, self.bot.getUpcomingEvents("what's due today?"))
+
+	def testWhatDueThisWeek(self):
+		e1 = Event("SYSC3200 Lab5", date.today())
+		e2 = Event("SYSC4504 A3", date.today() + timedelta(days=5))
+		e3 = Event("SYSC4501 A2", date.today() + timedelta(days=7))
+		e4 = Event("COMP1805 A4", date.today() + timedelta(days=60))
+		self.bot.events.extend([e1, e2, e3, e4])
+		expect = str(e1) + "\n" + str(e2) + "\n" + str(e3) + "\n"
+		self.assertEquals(expect, self.bot.getUpcomingEvents("what's due this week"))
+
+	def testWhatDueThisMonth(self):
+		e1 = Event("SYSC3200 A2", date.today() + timedelta(days=30))
+		e2 = Event("SYSC3101 A4", date.today() + timedelta(days=15))
+		e3 = Event("SYSC4805 Project", date.today() + timedelta(days=365))
+		self.bot.events.extend([e1, e2, e3])
+		expect = str(e1) + "\n" + str(e2) + "\n"
+		self.assertEquals(expect, self.bot.getUpcomingEvents("what is due this month?"))
+
+	def testWhatsDueNothing(self):
+		self.assertEquals("Nothing! :)", self.bot.getUpcomingEvents("whats due?"))
+
+	def testWhatsDueAll(self):
+		e1 = Event("SYSC3101 A1", date.today())
+		e2 = Event("SYSC3200 A4", date(3016, 10, 12))
+		e3 = Event("SYSC4001 Lab5", date.today())
+		self.bot.events.extend([e1, e2, e3])
+		expect = str(e1) + "\n" + str(e2) + "\n" + str(e3) + "\n"
+		self.assertEquals(expect, self.bot.getUpcomingEvents("whats due?"))
 
 if __name__ == '__main__':
 	unittest.main()

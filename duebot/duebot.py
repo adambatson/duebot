@@ -3,7 +3,7 @@ import sys
 import time as Time
 import re
 from event import Event, from_xml
-from datetime import date as Date, time, datetime
+from datetime import date as date, time, datetime, timedelta
 from slackclient import SlackClient
 
 READ_SOCKET_DELAY = 1
@@ -74,6 +74,7 @@ class Duebot(object):
 		instruction: the instruction to be parsed
 		"""
 		newEventRE = r".+(?= due).+"
+		whatDueRE = r"what('s|s| is) due"
 
 		match = re.search(newEventRE, instruction)
 		if match:
@@ -81,6 +82,9 @@ class Duebot(object):
 			if event: 
 				self.events.append(event)
 				self.writeEventToFile(event)
+			return
+		if re.search(whatDueRE, instruction.lower()):
+			s = self.getUpcomingEvents(instruction.lower())
 
 
 	def handleNewEvent(self, instruction):
@@ -157,6 +161,22 @@ class Duebot(object):
 		self.createXMLFile()
 		for event in self.events:
 			self.writeEventToFile(event)
+
+	def getUpcomingEvents(self, instruction):
+		if re.search(r"today(\?)?", instruction):
+			collectBy = lambda x: x.due_date == date.today()
+		elif re.search(r"week(\?)?", instruction):
+			collectBy = lambda x: x.due_date <= date.today() + timedelta(days=7)
+		elif re.search(r"month(\?)?", instruction):
+			collectBy = lambda x: x.due_date <= date.today() + timedelta(days=30)
+		else:
+			collectBy = lambda x: True #Get everything
+		s = ""
+		for event in self.events:
+			if collectBy(event):
+				s += str(event) + "\n"
+		return s if s != "" else "Nothing! :)"
+
 		
 def Main():
 	if len(sys.argv) != 2:
