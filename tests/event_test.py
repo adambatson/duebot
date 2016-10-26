@@ -3,7 +3,7 @@ import sys
 import os
 #Python interpretter needs to search up on directory for the duebot package
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "//..//")
-from datetime import date
+from datetime import date, time
 from duebot.event import Event, from_xml
 
 EVENT1_XML = "<event>\n\
@@ -22,8 +22,8 @@ TEST_EVENTS = os.path.dirname(os.path.realpath(__file__)) + "/data/test_events.x
 class EventTest(unittest.TestCase):
 
 	def setUp(self):
-		self.e1 = Event("SYSC4504 A1", date(2016, 10, 24), "9PM")
-		self.e2 = Event("SYSC4602 A3", date(2016, 10, 23), "12PM")
+		self.e1 = Event("SYSC4504 A1", date(2016, 10, 24), time(21))
+		self.e2 = Event("SYSC4602 A3", date(2016, 10, 23), time(12))
 
 	def test_to_xml(self):
 		self.assertEqual(EVENT1_XML, self.e1.to_xml())

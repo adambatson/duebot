@@ -110,7 +110,7 @@ class Duebot(object):
 				time += word
 		try:
 			if time == "": time = None #No time supplied
-			e = Event(name, self.parseDate(date), time)
+			e = Event(name, self.parseDate(date), self.parseTime(time))
 		except ValueError:
 			e = None
 		return e
@@ -127,6 +127,17 @@ class Duebot(object):
 			except ValueError:
 				pass
 		#None of the pattern match	
+		raise ValueError
+
+	def parseTime(self, time):
+		if time == None: return None
+		possiblePatterns = ["%I%p", "%I:%M%p", "%H:%M", "%H%M"]
+		for pattern in possiblePatterns:
+			try:
+				return datetime.strptime(time, pattern).time()
+			except ValueError:
+				pass
+		#None of the patterns match
 		raise ValueError
 		
 def Main():

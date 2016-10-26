@@ -9,7 +9,7 @@ class Event(object):
 		"""Constructor"""
 		self.title = title
 		self.due_date = due_date
-		self.due_time = self.validateDueTime(due_time)
+		self.due_time = due_time
 
 	def to_xml(self):
 		"""Returns the xml representation of an event as a string"""
@@ -23,17 +23,6 @@ class Event(object):
 		s += "\t<time>" + str(self.due_time) + "</time>\n"
 		s += "</event>\n"
 		return s
-
-	def validateDueTime(self, due_time):
-		if due_time == None: return None
-		possiblePatterns = ["%I%p", "%I:%M%p", "%H:%M", "%H%M"]
-		for pattern in possiblePatterns:
-			try:
-				return datetime.strptime(due_time, pattern).time()
-			except ValueError:
-				pass
-		#None of the patterns match
-		raise ValueError
 
 	def __eq__(self, other):
 		return self.title == other.title and self.due_date == other.due_date \
@@ -64,6 +53,12 @@ def parseEvent(event):
 
 	timeNode = event.getElementsByTagName('time').item(0)
 	time = str(timeNode.firstChild.data)
+	try:
+		time = datetime.strptime(time, "%H:%M:%S").time()
+	except ValueError:
+		print "Fatal! An invalid time was found in the xml file, it is possible corrupted"
+		print "<" + title + "> (HH:MM:SS) " + str(time)
+		raise ValueError
 
 	try:
 		d = date(int(year), int(month), int(day))

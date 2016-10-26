@@ -54,7 +54,7 @@ class DueBotTest(unittest.TestCase):
 		self.assertEquals(0, len(self.bot.events))
 
 	def testCreateEventWithTime(self):
-		e = Event("SYSC2300 A2", date(2016, 12, 14), "9AM")
+		e = Event("SYSC2300 A2", date(2016, 12, 14), time(9))
 		self.bot.parseInstruction("SYSC2300 A2 is due December 14 2016 at 9AM")
 		self.assertEquals(e, self.bot.events[0])
 
@@ -66,8 +66,8 @@ class DueBotTest(unittest.TestCase):
 		if os.path.isfile(self.bot.event_xml): os.remove(self.bot.event_xml)
 		#Use a different bot to avoid conflicts with the data file
 		bot2 = Duebot(BOT_NAME, True)
-		bot2.parseInstruction("SYSC4504 A1 is due on 24/10/2016")
-		bot2.parseInstruction("SYSC4602 A3 is due October 23 2016")
+		bot2.parseInstruction("SYSC4504 A1 is due on 24/10/2016 at 9PM")
+		bot2.parseInstruction("SYSC4602 A3 is due October 23 2016 at 12PM")
 		self.assertTrue(filecmp.cmp(TEST_XML, bot2.event_xml))
 		#Delete the xml file
 		os.remove(bot2.event_xml)
