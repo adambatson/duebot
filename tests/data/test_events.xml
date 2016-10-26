@@ -38,4 +38,13 @@
     </date>
     <time>12:00:00</time>
 </event>
+<event>
+    <title>SYSC4602 A4</title>
+    <date>
+        <year>2016</year>
+        <month>10</month>
+        <day>fish</day>
+    </date>
+    <time>9PM</time>
+</event>
 </events>
