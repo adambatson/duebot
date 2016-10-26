@@ -139,6 +139,24 @@ class Duebot(object):
 				pass
 		#None of the patterns match
 		raise ValueError
+
+	def cleanEvents(self):
+		"""Clears any events whose due date has passed
+		"""
+		today = datetime.now().date()
+		updateXML = False
+		for event in self.events:
+			if event.due_date < today:
+				self.events.remove(event)
+				updateXML = True
+		if updateXML: self.updateXML()
+
+	def updateXML(self):
+		#Delete old file
+		os.remove(self.event_xml)
+		self.createXMLFile()
+		for event in self.events:
+			self.writeEventToFile(event)
 		
 def Main():
 	if len(sys.argv) != 2:

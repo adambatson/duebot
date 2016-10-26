@@ -84,6 +84,28 @@ class DueBotTest(unittest.TestCase):
 		#Delete the xml file
 		os.remove(bot2.event_xml)
 
+	def testCleanEvents(self):
+		e1 = Event("SYSC4504 A1", date(3000, 10, 19))
+		e2 = Event("SYSC3101 A3", date(2010, 12, 21))
+		self.bot.events.append(e1)
+		self.bot.events.append(e2)
+		self.assertEquals(2, len(self.bot.events))
+		self.bot.cleanEvents()
+		self.assertEquals(1, len(self.bot.events))
+
+	def testCleanEventsUpdateXML(self):
+		# First clear the file from earlier tests
+		if os.path.isfile(self.bot.event_xml): os.remove(self.bot.event_xml)
+		bot2 = Duebot(BOT_NAME, True)
+		bot2.parseInstruction("SYSC4504 A1 is due on 24/10/3016 at 9PM")
+		bot2.parseInstruction("SYSC4602 A3 is due October 23 3016 at 12PM")
+		bot2.parseInstruction("SYSC3101 A2 is due December 11 1995 at 7PM")
+		# Ensure the past event is added
+		self.assertFalse(filecmp.cmp(TEST_XML, bot2.event_xml))
+		bot2.cleanEvents()
+		# Now the past event should be deleted
+		self.assertTrue(filecmp.cmp(TEST_XML, bot2.event_xml))
+
 
 if __name__ == '__main__':
 	unittest.main()
