@@ -1,3 +1,7 @@
+before_script:
+    #Strip carriage returns from UNIX test file
+    - perl -p -i -e "s/\r//g" tests/data/expected_events_UNIX>xml
+
 dev:
   script:
     - python -m unittest discover -s "tests/" -p "*_test.py"
