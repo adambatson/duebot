@@ -9,7 +9,7 @@ from duebot.event import Event, from_xml
 EVENT1_XML = "<event>\n\
 	<title>SYSC4504 A1</title>\n\
 	<date>\n\
-		<year>2016</year>\n\
+		<year>3016</year>\n\
 		<month>10</month>\n\
 		<day>24</day>\n\
 	</date>\n\
@@ -22,8 +22,8 @@ TEST_EVENTS = os.path.dirname(os.path.realpath(__file__)) + "/data/test_events.x
 class EventTest(unittest.TestCase):
 
 	def setUp(self):
-		self.e1 = Event("SYSC4504 A1", date(2016, 10, 24), time(21))
-		self.e2 = Event("SYSC4602 A3", date(2016, 10, 23), time(12))
+		self.e1 = Event("SYSC4504 A1", date(3016, 10, 24), time(21))
+		self.e2 = Event("SYSC4602 A3", date(3016, 10, 23), time(12))
 
 	def test_to_xml(self):
 		self.assertEqual(EVENT1_XML, self.e1.to_xml())

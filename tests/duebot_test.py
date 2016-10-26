@@ -21,13 +21,13 @@ class DueBotTest(unittest.TestCase):
 		self.bot = Duebot(BOT_NAME, True)
 
 	def testCreateEventLongFormDate1(self):
-		e = Event("SYSC4504 A1", date(2016, 12, 12))
-		self.bot.parseInstruction("SYSC4504 A1 is due on December 12 2016")
+		e = Event("SYSC4504 A1", date(3012, 12, 12))
+		self.bot.parseInstruction("SYSC4504 A1 is due on December 12 3012")
 		self.assertEqual(e, self.bot.events[0])
 
 	def testCreateEventLongFormDate2(self):
-		e = Event("SYSC3101 Assignment 2 Flex/Bison", date(2015, 10, 31))
-		self.bot.parseInstruction("SYSC3101 Assignment 2 Flex/Bison due October 31 2015")
+		e = Event("SYSC3101 Assignment 2 Flex/Bison", date(3015, 10, 31))
+		self.bot.parseInstruction("SYSC3101 Assignment 2 Flex/Bison due October 31 3015")
 		self.assertEquals(e, self.bot.events[0])
 
 	def testCreateEventLongFormDateNoDelimeter(self):
@@ -37,8 +37,8 @@ class DueBotTest(unittest.TestCase):
 		self.assertEquals(0, len(self.bot.events))
 
 	def testCreateEventShortFormDate1(self):
-		e = Event("SYSC4504 A1", date(2016, 1, 12))
-		self.bot.parseInstruction("SYSC4504 A1 is due on 12/01/2016")
+		e = Event("SYSC4504 A1", date(3016, 1, 12))
+		self.bot.parseInstruction("SYSC4504 A1 is due on 12/01/3016")
 		self.assertEquals(e, self.bot.events[0])
 
 	def testCreateEventShortFormDateInvalid(self):
@@ -54,8 +54,8 @@ class DueBotTest(unittest.TestCase):
 		self.assertEquals(0, len(self.bot.events))
 
 	def testCreateEventWithTime(self):
-		e = Event("SYSC2300 A2", date(2016, 12, 14), time(9))
-		self.bot.parseInstruction("SYSC2300 A2 is due December 14 2016 at 9AM")
+		e = Event("SYSC2300 A2", date(3016, 12, 14), time(9))
+		self.bot.parseInstruction("SYSC2300 A2 is due December 14 3016 at 9AM")
 		self.assertEquals(e, self.bot.events[0])
 
 	def testCreateEventWithInvalidTime(self):
@@ -78,8 +78,8 @@ class DueBotTest(unittest.TestCase):
 		if os.path.isfile(self.bot.event_xml): os.remove(self.bot.event_xml)
 		#Use a different bot to avoid conflicts with the data file
 		bot2 = Duebot(BOT_NAME, True)
-		bot2.parseInstruction("SYSC4504 A1 is due on 24/10/2016 at 9PM")
-		bot2.parseInstruction("SYSC4602 A3 is due October 23 2016 at 12PM")
+		bot2.parseInstruction("SYSC4504 A1 is due on 24/10/3016 at 9PM")
+		bot2.parseInstruction("SYSC4602 A3 is due October 23 3016 at 12PM")
 		self.assertTrue(filecmp.cmp(TEST_XML, bot2.event_xml))
 		#Delete the xml file
 		os.remove(bot2.event_xml)
