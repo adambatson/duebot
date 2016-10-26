@@ -2,6 +2,7 @@ import os
 import sys
 import time as Time
 import re
+import json
 from event import Event, from_xml
 from datetime import date as date, time, datetime, timedelta
 from slackclient import SlackClient
@@ -22,6 +23,7 @@ class Duebot(object):
 		self.name = name
 		self.slack_client = SlackClient(os.environ.get('DUE_BOT_API_TOKEN'))
 		self.bot_id = self.get_bot_id() if not testMode else TEST_MODE_BOT_ID
+		self.home_channel = self.get_home_channel() if not testMode else None
 		self.events = []
 		self.event_xml = os.path.dirname(os.path.realpath(__file__)) + "/../data/" + \
 			str(self.bot_id) + "_events.xml"
@@ -37,7 +39,19 @@ class Duebot(object):
 				if 'name' in user and user.get('name') == self.name:
 					return user.get('id')
 			print "Could not get bot id!"
-			return -1	
+			return -1
+
+	def get_home_channel(self):
+		channels = self.slack_client.api_call("channels.list")
+		memberOf = []
+		for chan in channels['channels']:
+			if chan['is_member']: memberOf.append(chan['id'])
+		if len(memberOf) != 1:
+			#TODO Fix this in later versions to support multiple channels
+			print "Fatal!  Duebot can only be a member of exactly one channel!"
+			sys.exit()
+		return memberOf[0]
+				
 
 	def listen(self):
 		"""Checks for messages from the firehose every READ_SOCKET_DELAY seconds
