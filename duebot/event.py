@@ -1,7 +1,9 @@
 from xml.dom import minidom
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 import sys
 import re
+
+DEFAULT_YEAR = 1900
 
 class Event(object):
 
@@ -9,6 +11,10 @@ class Event(object):
 		"""Constructor"""
 		self.title = title
 		self.due_date = due_date
+		if self.due_date.year == DEFAULT_YEAR:
+			today = date.today()
+			year = today.year if due_date.month >= today.month else today.year + 1
+			self.due_date = date(year, due_date.month, due_date.day)
 		self.due_time = due_time
 
 	def to_xml(self):

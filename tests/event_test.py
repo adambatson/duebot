@@ -41,5 +41,12 @@ class EventTest(unittest.TestCase):
 		e = Event("SYSC3101 A2", date(3016, 12, 10))
 		self.assertEquals(str(e), "SYSC3101 A2 is due on December 10 3016")
 
+	def testYearSet(self):
+		e1 = Event("Event 1", date(1900, date.today().month, 12))
+		e2 = Event("Event 2", date(1900, date.today().month - 1, 12))
+		today = date.today()
+		self.assertEquals(today.year, e1.due_date.year)
+		self.assertEquals(today.year + 1, e2.due_date.year)
+
 if __name__ == '__main__':
 	unittest.main()
