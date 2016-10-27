@@ -94,6 +94,12 @@ class Duebot(object):
 		newEventRE = r".+(?= due).+"
 		whatDueRE = r"what('s|s| is) due"
 
+		if re.search(whatDueRE, instruction.lower()):
+			print "!!!"
+			s = self.getUpcomingEvents(instruction.lower())
+			self.postMessage(s)
+			return
+
 		match = re.search(newEventRE, instruction)
 		if match:
 			event = self.handleNewEvent(match.group())
@@ -102,9 +108,13 @@ class Duebot(object):
 				self.writeEventToFile(event)
 				self.postMessage("Got it!  I'll remind you about this on: " + 
 					datetime.strftime(event.due_date - timedelta(days=3), "%B %d %Y"))
+			else:
+				self.postMessage("Sorry I couldn't create that event.  Is the date and time valid?")
 			return
-		if re.search(whatDueRE, instruction.lower()):
-			s = self.getUpcomingEvents(instruction.lower())
+
+		if re.search(r"help", instruction.lower()):
+			self.postMessage(self.getHelpDetails())
+			return
 
 
 	def handleNewEvent(self, instruction):
@@ -196,6 +206,14 @@ class Duebot(object):
 			if collectBy(event):
 				s += str(event) + "\n"
 		return s if s != "" else "Nothing! :)"
+
+	def getHelpDetails(self):
+		return "Deadline Bot v0.0.0\n" \
+		"<assignment name> is due on <date> at <time> - to add an assignment\n" \
+		"\tTime values are optional however date is mandatory\n" \
+		"What's due [today|this week|this month] - to list upcoming assignments\n" \
+		"help - display this message (But you already figured that one out\n" \
+		"https://github.com/adambatson/Deadline_Bot"
 
 		
 def Main():
