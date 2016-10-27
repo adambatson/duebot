@@ -51,6 +51,10 @@ class Duebot(object):
 			print "Fatal!  Duebot can only be a member of exactly one channel!"
 			sys.exit()
 		return memberOf[0]
+
+	def postMessage(self, msg):
+		self.slack_client.api_call("chat.postMessage", channel=self.home_channel,
+			text=msg, asUser=True)
 				
 
 	def listen(self):
@@ -96,6 +100,8 @@ class Duebot(object):
 			if event: 
 				self.events.append(event)
 				self.writeEventToFile(event)
+				self.postMessage("Got it!  I'll remind you about this on: " + 
+					datetime.strftime(event.due_date - timedelta(days=3), "%B %d %Y"))
 			return
 		if re.search(whatDueRE, instruction.lower()):
 			s = self.getUpcomingEvents(instruction.lower())
