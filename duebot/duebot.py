@@ -28,6 +28,8 @@ class Duebot(object):
 		self.event_xml = os.path.dirname(os.path.realpath(__file__)) + "/../data/" + \
 			str(self.bot_id) + "_events.xml"
 		if not os.path.isfile(self.event_xml): self.createXMLFile()
+		if not testMode: self.events = from_xml(self.event_xml)
+		self.cleanEvents()
 
 	def get_bot_id(self):
 		"""Gets the User id associated with this bots name
@@ -95,7 +97,6 @@ class Duebot(object):
 		whatDueRE = r"what('s|s| is) due"
 
 		if re.search(whatDueRE, instruction.lower()):
-			print "!!!"
 			s = self.getUpcomingEvents(instruction.lower())
 			self.postMessage(s)
 			return

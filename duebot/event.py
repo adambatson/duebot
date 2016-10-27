@@ -65,12 +65,14 @@ def parseEvent(event):
 
 	timeNode = event.getElementsByTagName('time').item(0)
 	time = str(timeNode.firstChild.data)
-	try:
-		time = datetime.strptime(time, "%H:%M:%S").time()
-	except ValueError:
-		print "Fatal! An invalid time was found in the xml file, it is possible corrupted"
-		print "<" + title + "> (HH:MM:SS) " + str(time)
-		raise ValueError
+	if time != "None":
+		try:
+			time = datetime.strptime(time, "%H:%M:%S").time()
+		except ValueError:
+			print "Fatal! An invalid time was found in the xml file, it is possible corrupted"
+			print "<" + title + "> (HH:MM:SS) " + str(time)
+			raise ValueError
+	else: time = None
 
 	try:
 		d = date(int(year), int(month), int(day))
