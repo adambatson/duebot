@@ -20,6 +20,8 @@ python duebot/duebot.py "name"
 ```
 where "name" is the name of the bot on your slack team.
 
+You'll also need to set your bots API Token to an environment variable named : DUE_BOT_API_TOKEN
+
 ## TODO
 - Ability to set custom reminders for events
 - Prevent users from adding duplicate events
