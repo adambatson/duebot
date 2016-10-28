@@ -142,5 +142,13 @@ class DueBotTest(unittest.TestCase):
 		expect = str(e1) + "\n" + str(e2) + "\n" + str(e3) + "\n"
 		self.assertEquals(expect, self.bot.getUpcomingEvents("whats due?"))
 
+	def testGetEventReminders(self):
+		e1 = Event("SYSC3101 A1", date.today())
+		e2 = Event("SYSC3101 A4", date.today() + timedelta(days=3))
+		e3 = Event("SYSC3200 Lab3", date.today() + timedelta(days=7))
+		self.bot.events.extend([e1, e2, e3])
+		expect = str(e1) + "\n" + str(e2) + "\n"
+		self.assertEquals(expect, self.bot.getEventReminders())
+
 if __name__ == '__main__':
 	unittest.main()

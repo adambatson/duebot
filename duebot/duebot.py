@@ -2,8 +2,8 @@ import os
 import sys
 import time as Time
 import re
-import json
 from event import Event, from_xml
+from sleepworker import SleepWorker
 from datetime import date as date, time, datetime, timedelta
 from slackclient import SlackClient
 
@@ -30,6 +30,10 @@ class Duebot(object):
 		if not os.path.isfile(self.event_xml): self.createXMLFile()
 		if not testMode: self.events = from_xml(self.event_xml)
 		self.cleanEvents()
+		if not testMode:
+			#Launch the sleep worker thread
+			sleepWorker = SleepWorker(self)
+			sleepWorker.start()
 
 	def get_bot_id(self):
 		"""Gets the User id associated with this bots name
@@ -107,7 +111,7 @@ class Duebot(object):
 			if event: 
 				self.events.append(event)
 				self.writeEventToFile(event)
-				self.postMessage("Got it!  I'll remind you about this on: " + 
+				self.postMessage("Got it!  I'll start reminding you about this on: " + 
 					datetime.strftime(event.due_date - timedelta(days=3), "%B %d %Y"))
 			else:
 				self.postMessage("Sorry I couldn't create that event.  Is the date and time valid?")
@@ -202,21 +206,34 @@ class Duebot(object):
 			collectBy = lambda x: x.due_date <= date.today() + timedelta(days=30)
 		else:
 			collectBy = lambda x: True #Get everything
+		s = self.collectEvents(collectBy)
+		return s if s != "" else "Nothing! :)"
+
+	def collectEvents(self, collectBy):
 		s = ""
 		for event in self.events:
 			if collectBy(event):
 				s += str(event) + "\n"
-		return s if s != "" else "Nothing! :)"
+		return s
 
 	def getHelpDetails(self):
-		return "Deadline Bot v0.0.0\n" \
+		s =  "Deadline Bot v0.0.0\n" \
 		"<assignment name> is due on <date> at <time> - to add an assignment\n" \
 		"\tTime values are optional however date is mandatory\n" \
 		"What's due [today|this week|this month] - to list upcoming assignments\n" \
 		"help - display this message (But you already figured that one out\n" \
 		"https://github.com/adambatson/Deadline_Bot"
 
-		
+		return s
+
+	def getEventReminders(self):
+		return self.collectEvents(lambda x: x.due_date <= date.today() + timedelta(days=3))
+
+	def sendReminders(self):
+		s = self.getEventReminders()
+		if s != "":
+			self.postMessage("Hey there!  Just a quick reminder about stuff that's due soon!\n" + s)
+
 def Main():
 	if len(sys.argv) != 2:
 		print "Incorrect number of command line arguments!"
