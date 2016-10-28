@@ -45,8 +45,8 @@ class EventTest(unittest.TestCase):
 		e1 = Event("Event 1", date(1900, date.today().month, 12))
 		e2 = Event("Event 2", date(1900, date.today().month - 1, 12))
 		today = date.today()
-		self.assertEquals(today.year, e1.due_date.year)
-		self.assertEquals(today.year + 1, e2.due_date.year)
+		self.assertEquals(today.year, e1.dueDate.year)
+		self.assertEquals(today.year + 1, e2.dueDate.year)
 
 if __name__ == '__main__':
 	unittest.main()

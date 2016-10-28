@@ -7,37 +7,37 @@ DEFAULT_YEAR = 1900
 
 class Event(object):
 
-	def __init__(self, title, due_date, due_time=None):
+	def __init__(self, title, dueDate, dueTime=None):
 		"""Constructor"""
 		self.title = title
-		self.due_date = due_date
-		if self.due_date.year == DEFAULT_YEAR:
+		self.dueDate = dueDate
+		if self.dueDate.year == DEFAULT_YEAR:
 			today = date.today()
-			year = today.year if due_date.month >= today.month else today.year + 1
-			self.due_date = date(year, due_date.month, due_date.day)
-		self.due_time = due_time
+			year = today.year if dueDate.month >= today.month else today.year + 1
+			self.dueDate = date(year, dueDate.month, dueDate.day)
+		self.dueTime = dueTime
 
 	def to_xml(self):
 		"""Returns the xml representation of an event as a string"""
 		s = "<event>\n"
 		s += "\t<title>" + self.title + "</title>\n"
 		s += "\t<date>\n"
-		s += "\t\t<year>" + str(self.due_date.year) + "</year>\n"
-		s += "\t\t<month>" + str(self.due_date.month) + "</month>\n"
-		s += "\t\t<day>" + str(self.due_date.day) + "</day>\n"
+		s += "\t\t<year>" + str(self.dueDate.year) + "</year>\n"
+		s += "\t\t<month>" + str(self.dueDate.month) + "</month>\n"
+		s += "\t\t<day>" + str(self.dueDate.day) + "</day>\n"
 		s += "\t</date>\n"
-		s += "\t<time>" + str(self.due_time) + "</time>\n"
+		s += "\t<time>" + str(self.dueTime) + "</time>\n"
 		s += "</event>\n"
 		return s
 
 	def __eq__(self, other):
-		return self.title == other.title and self.due_date == other.due_date \
-			and self.due_time == other.due_time
+		return self.title == other.title and self.dueDate == other.dueDate \
+			and self.dueTime == other.dueTime
 
 	def __str__(self):
-		s = self.title + " is due on " + self.due_date.strftime("%B %d %Y")
-		if self.due_time:
-			s += " at " + self.due_time.strftime("%I:%M%p")
+		s = self.title + " is due on " + self.dueDate.strftime("%B %d %Y")
+		if self.dueTime:
+			s += " at " + self.dueTime.strftime("%I:%M%p")
 		return s
 
 def parseDate(date):

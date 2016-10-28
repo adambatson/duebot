@@ -112,7 +112,7 @@ class Duebot(object):
 				self.events.append(event)
 				self.writeEventToFile(event)
 				self.postMessage("Got it!  I'll start reminding you about this on: " + 
-					datetime.strftime(event.due_date - timedelta(days=3), "%B %d %Y"))
+					datetime.strftime(event.dueDate - timedelta(days=3), "%B %d %Y"))
 			else:
 				self.postMessage("Sorry I couldn't create that event.  Is the date and time valid?")
 			return
@@ -185,7 +185,7 @@ class Duebot(object):
 		today = datetime.now().date()
 		updateXML = False
 		for event in self.events:
-			if event.due_date < today:
+			if event.dueDate < today:
 				self.events.remove(event)
 				updateXML = True
 		if updateXML: self.updateXML()
@@ -199,11 +199,11 @@ class Duebot(object):
 
 	def getUpcomingEvents(self, instruction):
 		if re.search(r"today(\?)?", instruction):
-			collectBy = lambda x: x.due_date == date.today()
+			collectBy = lambda x: x.dueDate == date.today()
 		elif re.search(r"week(\?)?", instruction):
-			collectBy = lambda x: x.due_date <= date.today() + timedelta(days=7)
+			collectBy = lambda x: x.dueDate <= date.today() + timedelta(days=7)
 		elif re.search(r"month(\?)?", instruction):
-			collectBy = lambda x: x.due_date <= date.today() + timedelta(days=30)
+			collectBy = lambda x: x.dueDate <= date.today() + timedelta(days=30)
 		else:
 			collectBy = lambda x: True #Get everything
 		s = self.collectEvents(collectBy)
@@ -227,7 +227,7 @@ class Duebot(object):
 		return s
 
 	def getEventReminders(self):
-		return self.collectEvents(lambda x: x.due_date <= date.today() + timedelta(days=3))
+		return self.collectEvents(lambda x: x.dueDate <= date.today() + timedelta(days=3))
 
 	def sendReminders(self):
 		s = self.getEventReminders()
