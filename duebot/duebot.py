@@ -74,10 +74,11 @@ class Duebot(object):
 				if output_list and len(output_list) > 0:
 					for output in output_list:
 						if 'channel' in output and 'text' in output:
-							#Are you talking to me?
-							match = re.search(pattern, output['text'])
-							if match:
-								self.parseInstruction(match.group())
+							if output['channel'] == self.home_channel:
+								#Are you talking to me?
+								match = re.search(pattern, output['text'])
+								if match:
+									self.parseInstruction(match.group())
 				Time.sleep(READ_SOCKET_DELAY)
 
 	def createXMLFile(self):
@@ -221,7 +222,7 @@ class Duebot(object):
 		"<assignment name> is due on <date> at <time> - to add an assignment\n" \
 		"\tTime values are optional however date is mandatory\n" \
 		"What's due [today|this week|this month] - to list upcoming assignments\n" \
-		"help - display this message (But you already figured that one out\n" \
+		"help - display this message (But you already figured that one out)\n" \
 		"https://github.com/adambatson/Deadline_Bot"
 
 		return s
