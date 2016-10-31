@@ -1,5 +1,6 @@
 # Duebot
 [![build status](http://gitlab.adambatson.com/adambatson/deadline_bot/badges/master/build.svg)](http://gitlab.adambatson.com/adambatson/deadline_bot/builds/)
+[![build status](https://travis-ci.org/adambatson/duebot.svg?branch=master](https://travis-ci.org/adambatson/duebot)
 
 A Slack bot to track due dates
 
