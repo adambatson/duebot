@@ -1,4 +1,4 @@
-# Deadline Bot
+# Duebot
 [![build status](http://gitlab.adambatson.com/adambatson/deadline_bot/badges/master/build.svg)](http://gitlab.adambatson.com/adambatson/deadline_bot/builds/)
 
 A Slack bot to track due dates
@@ -21,6 +21,17 @@ python duebot/duebot.py "name"
 where "name" is the name of the bot on your slack team.
 
 You'll also need to set your bots API Token to an environment variable named : DUE_BOT_API_TOKEN
+
+### Commands
+Currently Duebot supports the following commands all commands must be prefaced with
+@duebot:
+- [name] is due one \[date] \(at time)
+	- Adds an event named name due on date, time parameter is optional
+- What's due \(today | this week | this month)?
+	- List all upcoming events, optionally listing events only for the current
+	day, week, or month
+- help
+	- Displays the help message
 
 ## TODO
 - Ability to set custom reminders for events
