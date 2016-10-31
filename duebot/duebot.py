@@ -218,12 +218,12 @@ class Duebot(object):
 		return s
 
 	def getHelpDetails(self):
-		s =  "Deadline Bot v0.0.0\n" \
-		"<assignment name> is due on <date> at <time> - to add an assignment\n" \
+		s =  "Deadline Bot v0.1.0\n" \
+		"<name> is due on <date> at (time) - to add an assignment\n" \
 		"\tTime values are optional however date is mandatory\n" \
-		"What's due [today|this week|this month] - to list upcoming assignments\n" \
+		"What's due (today|this week|this month) - to list upcoming assignments\n" \
 		"help - display this message (But you already figured that one out)\n" \
-		"https://github.com/adambatson/Deadline_Bot"
+		"https://github.com/adambatson/duebot"
 
 		return s
 
